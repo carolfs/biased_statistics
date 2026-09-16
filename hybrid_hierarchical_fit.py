@@ -1,6 +1,7 @@
 import pandas as pd
 from cmdstanpy import CmdStanModel
 import matplotlib.pyplot as plt
+import numpy as np
 
 model = CmdStanModel(stan_file="hybrid_hierarchical.stan")
 df = pd.read_csv("weightnoisesim.csv")

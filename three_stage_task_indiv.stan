@@ -62,7 +62,7 @@ functions {
             }
             else {
                 array[3] int spaceships = (choice1[t] % 2 == 0) ? {2, 4, 6} : {1, 3, 5};
-                real spaceshipvals[3];
+                array[3] real spaceshipvals;
                 for (i in 1:3) {
                     spaceshipvals[i] = blow*hybridspaceshipval(spaceships[i], wlow, qaliens, qspaceships);
                 }

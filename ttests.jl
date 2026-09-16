@@ -38,7 +38,7 @@ function getmbweight(trials)
     while true
         try
             return hybridfit(trials)[7]
-        catch
+        catch err
             println("ERROR: ", err.msg)
             println(stacktrace())
         end
@@ -66,10 +66,10 @@ function runttestnoiselevels(repl)
 end
 
 const numrepls = 1_000
-const numbatches = 10
+const numbatches = 10 # Run them in parallel
 
 function runttests(numbatch)
-    @assert 1 <= numbatch <= (numrepls ÷ numbatches)
+    @assert 1 <= numbatch <= numbatches
     # Run t-tests for different numbers of trials
     output_flnm = "ttest_tst_numtrials_results_$numbatch.csv"
     dorepls = (numrepls ÷ numbatches)
@@ -88,9 +88,31 @@ function runttests(numbatch)
         open(output_flnm, "w") do outf
             println(outf, "replication,n1,n2,avgmbw1,avgmbw2,tvalue,pvalue")
             for repl = ((numbatch - 1)*dorepls + 1):numbatch*dorepls
-                result = runttestnumtrials(repl)
+                result = runttestnoiselevels(repl)
                 println(outf, result)
             end
         end
     end
+end
+
+function combine(name)
+    open("ttest_tst_$(name)_results.csv", "w") do outf
+        for numbatch in 1:numbatches
+            lines = readlines("ttest_tst_$(name)_results_$numbatch.csv")
+            numbatch == 1 && println(outf, lines[1])   # header once
+            foreach(line -> println(outf, line), lines[2:end])
+        end
+    end
+end
+
+function main()
+    Threads.@threads for numbatch in 1:numbatches
+        runttests(numbatch)
+    end
+    combine("numtrials")
+    combine("noiselevels")
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
 end
