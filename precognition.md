@@ -59,9 +59,11 @@ CSV are not always two consecutive trials in the experiment, and the
 number of trial pairs available varies slightly from participant to
 participant. This, together with the exclusion of the participants
 described below, is why the total number of pairs analysed is smaller
-than 568 × 200.
+than $568 \times 200$.
 
-> **Columns used**
+> [!NOTE]
+>
+> ### Columns used
 >
 > `subj` (participant identifier), `meas` (session, 1–3), `ch1`
 > (first-stage choice), `rw` (rewarded: 1, unrewarded: 0), `tran`
@@ -141,25 +143,21 @@ transition). The participant then chooses again and is rewarded or not.
 The standard analysis splits each participant’s trial sequence into
 pairs of consecutive trials, codes the first-stage decision in each pair
 as a *stay* if the participant repeated their previous first-stage
-choice, and regresses it on the first trial’s outcome *x*<sub>*r*</sub>
-(+1 rewarded, −1 unrewarded) and transition type *x*<sub>*t*</sub> (+1
-common, −1 rare):
+choice, and regresses it on the first trial’s outcome $x_r$ ($+1$
+rewarded, $-1$ unrewarded) and transition type $x_t$ ($+1$ common, $-1$
+rare):
 
-<span id="eq-usual">
-logit(*P*(stay)) = *β*<sub>0</sub> + *β*<sub>*r*</sub>*x*<sub>*r*</sub> + *β*<sub>*t*</sub>*x*<sub>*t*</sub> + *β*<sub>*r* × *t*</sub>*x*<sub>*r*</sub>*x*<sub>*t*</sub>.   (1)
-</span>
+<span id="eq-usual">$$\mathrm{logit}(P(\mathrm{stay})) = \beta_0 + \beta_r x_r + \beta_t x_t + \beta_{r\times t} x_r x_t. \qquad(1)$$</span>
 
-To this model, I add the *second* trial’s transition, *x*<sub>*f*</sub>,
-where *f* stands for “future”, together with all of its interactions:
+To this model, I add the *second* trial’s transition, $x_f$, where $f$
+stands for “future”, together with all of its interactions:
 
-<span id="eq-full">
-logit(*P*(stay)) = *β*<sub>0</sub> + *β*<sub>*r*</sub>*x*<sub>*r*</sub> + *β*<sub>*t*</sub>*x*<sub>*t*</sub> + *β*<sub>*r* × *t*</sub>*x*<sub>*r*</sub>*x*<sub>*t*</sub> + *β*<sub>*f*</sub>*x*<sub>*f*</sub> + *β*<sub>*r* × *f*</sub>*x*<sub>*r*</sub>*x*<sub>*f*</sub> + *β*<sub>*t* × *f*</sub>*x*<sub>*t*</sub>*x*<sub>*f*</sub> + *β*<sub>*r* × *t* × *f*</sub>*x*<sub>*r*</sub>*x*<sub>*t*</sub>*x*<sub>*f*</sub>.   (2)
-</span>
+<span id="eq-full">$$\mathrm{logit}(P(\mathrm{stay})) = \beta_0 + \beta_r x_r + \beta_t x_t + \beta_{r\times t} x_r x_t + \beta_f x_f + \beta_{r\times f} x_r x_f + \beta_{t\times f} x_t x_f + \beta_{r\times t\times f} x_r x_t x_f. \qquad(2)$$</span>
 
 The stay-or-switch decision in each pair is made *before* the second
 trial’s transition occurs, and each transition is an independent random
-event with fixed probabilities. Every coefficient involving
-*x*<sub>*f*</sub> therefore has a true value of zero.
+event with fixed probabilities. Every coefficient involving $x_f$
+therefore has a true value of zero.
 
 ### Loading the data
 
@@ -240,10 +238,9 @@ can use the same code; each is listed here as it is introduced.
 runs the separation test when one is wanted, and delegates the fitting
 itself to `fit_participant`, which assumes the matrix has already been
 checked. A design matrix is rank deficient when one of the eight
-combinations of *x*<sub>*r*</sub>, *x*<sub>*t*</sub> and
-*x*<sub>*f*</sub> is absent from that participant’s trial pairs, in
-which case the model is not identified, nothing is fitted, and the
-separation test cannot be run either.
+combinations of $x_r$, $x_t$ and $x_f$ is absent from that participant’s
+trial pairs, in which case the model is not identified, nothing is
+fitted, and the separation test cannot be run either.
 
 ``` python
 show_source(fit_participant, participant_status)
@@ -293,7 +290,7 @@ show_source(fit_participant, participant_status)
 
 Each participant is fitted separately, and each coefficient is then
 tested against zero across participants with a two-sided Wilcoxon
-signed-rank test, with *P* values corrected for multiple comparisons by
+signed-rank test, with $P$ values corrected for multiple comparisons by
 Holm’s method. The effect size is the matched-pairs rank-biserial
 correlation. This is a typical two-step analysis.
 
@@ -379,8 +376,8 @@ def describe_exclusions(result, drop_separated=False):
 
 Here <a href="#eq-full" class="quarto-xref">Equation 2</a> is fitted to
 each participant’s real data by maximum likelihood, with the real future
-transitions as the predictor *x*<sub>*f*</sub>. This reproduces **Table
-1** of the manuscript.
+transitions as the predictor $x_f$. This reproduces **Table 1** of the
+manuscript.
 
 ``` python
 real = two_step_analysis(tst, method="mle", future="real")
@@ -391,117 +388,39 @@ as_table(real)
 
     N = 563 fitted; 229 quasi-separated (retained)
 
+<div id="tbl-real">
+
+Table 1
+
+<div class="cell-output cell-output-display" data-execution_count="7">
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Effect</th>
-<th data-quarto-table-cell-role="th">Mean</th>
-<th data-quarto-table-cell-role="th">SD</th>
-<th data-quarto-table-cell-role="th">W</th>
-<th data-quarto-table-cell-role="th">P-value</th>
-<th data-quarto-table-cell-role="th">Effect size</th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>intercept</td>
-<td>2.63</td>
-<td>2.98</td>
-<td>2225</td>
-<td>&lt;0.001</td>
-<td>0.972</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward</td>
-<td>0.58</td>
-<td>1.54</td>
-<td>38278</td>
-<td>&lt;0.001</td>
-<td>0.518</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition</td>
-<td>-0.32</td>
-<td>1.33</td>
-<td>70764</td>
-<td>0.102</td>
-<td>-0.109</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition</td>
-<td>0.44</td>
-<td>1.48</td>
-<td>48165</td>
-<td>&lt;0.001</td>
-<td>0.393</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>future transition</td>
-<td>-0.51</td>
-<td>1.30</td>
-<td>51266</td>
-<td>&lt;0.001</td>
-<td>-0.354</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>reward:future transition</td>
-<td>-0.07</td>
-<td>1.18</td>
-<td>75463</td>
-<td>0.620</td>
-<td>-0.049</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>previous transition:future transition</td>
-<td>0.19</td>
-<td>1.22</td>
-<td>73212</td>
-<td>0.330</td>
-<td>0.078</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>reward:previous transition:future transition</td>
-<td>-0.05</td>
-<td>1.20</td>
-<td>77343</td>
-<td>0.620</td>
-<td>-0.026</td>
-<td>impossible</td>
-</tr>
-</tbody>
-</table>
+|  | Effect | Mean | SD | W | P-value | Effect size |  |
+|----|----|----|----|----|----|----|----|
+| 0 | intercept | 2.63 | 2.98 | 2225 | \<0.001 | 0.972 |  |
+| 1 | reward | 0.58 | 1.54 | 38278 | \<0.001 | 0.518 |  |
+| 2 | previous transition | -0.32 | 1.33 | 70764 | 0.102 | -0.109 |  |
+| 3 | reward:previous transition | 0.44 | 1.48 | 48165 | \<0.001 | 0.393 |  |
+| 4 | future transition | -0.51 | 1.30 | 51266 | \<0.001 | -0.354 | impossible |
+| 5 | reward:future transition | -0.07 | 1.18 | 75463 | 0.620 | -0.049 | impossible |
+| 6 | previous transition:future transition | 0.19 | 1.22 | 73212 | 0.330 | 0.078 | impossible |
+| 7 | reward:previous transition:future transition | -0.05 | 1.20 | 77343 | 0.620 | -0.026 | impossible |
+
+</div>
+
+</div>
 
 </div>
 
@@ -524,7 +443,7 @@ precognition or a defect in the analysis.
 ## The result does not depend on the predictor being real
 
 Replacing the future transitions with pseudo-random numbers drawn from a
-Bernoulli distribution with *p* = 0.7, matching the transition
+Bernoulli distribution with $p = 0.7$, matching the transition
 probabilities of the task, gives the same result. This reproduces
 **Table 2** of the manuscript.
 
@@ -538,117 +457,39 @@ as_table(simulated)
 
     N = 562 fitted; 1 rank deficient (excluded)
 
+<div id="tbl-simulated">
+
+Table 2
+
+<div class="cell-output cell-output-display" data-execution_count="9">
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Effect</th>
-<th data-quarto-table-cell-role="th">Mean</th>
-<th data-quarto-table-cell-role="th">SD</th>
-<th data-quarto-table-cell-role="th">W</th>
-<th data-quarto-table-cell-role="th">P-value</th>
-<th data-quarto-table-cell-role="th">Effect size</th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>intercept</td>
-<td>2.67</td>
-<td>3.04</td>
-<td>3120</td>
-<td>&lt;0.001</td>
-<td>0.961</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward</td>
-<td>0.54</td>
-<td>1.51</td>
-<td>39023</td>
-<td>&lt;0.001</td>
-<td>0.507</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition</td>
-<td>-0.37</td>
-<td>1.36</td>
-<td>68366</td>
-<td>0.021</td>
-<td>-0.136</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition</td>
-<td>0.44</td>
-<td>1.58</td>
-<td>50057</td>
-<td>&lt;0.001</td>
-<td>0.367</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>future transition</td>
-<td>-0.53</td>
-<td>1.32</td>
-<td>56680</td>
-<td>&lt;0.001</td>
-<td>-0.283</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>reward:future transition</td>
-<td>-0.07</td>
-<td>1.28</td>
-<td>74770</td>
-<td>0.522</td>
-<td>-0.055</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>previous transition:future transition</td>
-<td>0.17</td>
-<td>1.22</td>
-<td>72517</td>
-<td>0.262</td>
-<td>0.083</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>reward:previous transition:future transition</td>
-<td>-0.12</td>
-<td>1.28</td>
-<td>76954</td>
-<td>0.577</td>
-<td>-0.027</td>
-<td>impossible</td>
-</tr>
-</tbody>
-</table>
+|  | Effect | Mean | SD | W | P-value | Effect size |  |
+|----|----|----|----|----|----|----|----|
+| 0 | intercept | 2.67 | 3.04 | 3120 | \<0.001 | 0.961 |  |
+| 1 | reward | 0.54 | 1.51 | 39023 | \<0.001 | 0.507 |  |
+| 2 | previous transition | -0.37 | 1.36 | 68366 | 0.021 | -0.136 |  |
+| 3 | reward:previous transition | 0.44 | 1.58 | 50057 | \<0.001 | 0.367 |  |
+| 4 | future transition | -0.53 | 1.32 | 56680 | \<0.001 | -0.283 | impossible |
+| 5 | reward:future transition | -0.07 | 1.28 | 74770 | 0.522 | -0.055 | impossible |
+| 6 | previous transition:future transition | 0.17 | 1.22 | 72517 | 0.262 | 0.083 | impossible |
+| 7 | reward:previous transition:future transition | -0.12 | 1.28 | 76954 | 0.577 | -0.027 | impossible |
+
+</div>
+
+</div>
 
 </div>
 
@@ -707,191 +548,36 @@ reps_mle
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">rep</th>
-<th data-quarto-table-cell-role="th">b_f</th>
-<th data-quarto-table-cell-role="th">P (b_f)</th>
-<th data-quarto-table-cell-role="th">any impossible coef.
-significant</th>
-<th data-quarto-table-cell-role="th">n</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>-0.485</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>-0.560</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>-0.497</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>-0.550</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>-0.632</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>6</td>
-<td>-0.575</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>7</td>
-<td>-0.573</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>8</td>
-<td>-0.513</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">8</td>
-<td>9</td>
-<td>-0.518</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">9</td>
-<td>10</td>
-<td>-0.505</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">10</td>
-<td>11</td>
-<td>-0.529</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">11</td>
-<td>12</td>
-<td>-0.477</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">12</td>
-<td>13</td>
-<td>-0.518</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">13</td>
-<td>14</td>
-<td>-0.498</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>561</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">14</td>
-<td>15</td>
-<td>-0.572</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">15</td>
-<td>16</td>
-<td>-0.584</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">16</td>
-<td>17</td>
-<td>-0.468</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">17</td>
-<td>18</td>
-<td>-0.518</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">18</td>
-<td>19</td>
-<td>-0.548</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">19</td>
-<td>20</td>
-<td>-0.568</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-</tbody>
-</table>
+|     | rep | b_f    | P (b_f) | any impossible coef. significant | n   |
+|-----|-----|--------|---------|----------------------------------|-----|
+| 0   | 1   | -0.485 | \<0.001 | yes                              | 563 |
+| 1   | 2   | -0.560 | \<0.001 | yes                              | 563 |
+| 2   | 3   | -0.497 | \<0.001 | yes                              | 563 |
+| 3   | 4   | -0.550 | \<0.001 | yes                              | 563 |
+| 4   | 5   | -0.632 | \<0.001 | yes                              | 562 |
+| 5   | 6   | -0.575 | \<0.001 | yes                              | 563 |
+| 6   | 7   | -0.573 | \<0.001 | yes                              | 563 |
+| 7   | 8   | -0.513 | \<0.001 | yes                              | 563 |
+| 8   | 9   | -0.518 | \<0.001 | yes                              | 563 |
+| 9   | 10  | -0.505 | \<0.001 | yes                              | 563 |
+| 10  | 11  | -0.529 | \<0.001 | yes                              | 563 |
+| 11  | 12  | -0.477 | \<0.001 | yes                              | 563 |
+| 12  | 13  | -0.518 | \<0.001 | yes                              | 563 |
+| 13  | 14  | -0.498 | \<0.001 | yes                              | 561 |
+| 14  | 15  | -0.572 | \<0.001 | yes                              | 562 |
+| 15  | 16  | -0.584 | \<0.001 | yes                              | 563 |
+| 16  | 17  | -0.468 | \<0.001 | yes                              | 563 |
+| 17  | 18  | -0.518 | \<0.001 | yes                              | 563 |
+| 18  | 19  | -0.548 | \<0.001 | yes                              | 563 |
+| 19  | 20  | -0.568 | \<0.001 | yes                              | 563 |
 
 </div>
 
@@ -900,10 +586,10 @@ event but also future computer simulations.
 
 ## What creates the effect: the unequal split
 
-The two values of *x*<sub>*f*</sub> are not equally frequent: it is +1
-on 70% of trial pairs and −1 on the remaining 30%. Generating the same
-predictor with a 50% probability of +1, so that the two subsets of trial
-pairs are the same size, removes the effect entirely.
+The two values of $x_f$ are not equally frequent: it is $+1$ on 70% of
+trial pairs and $-1$ on the remaining 30%. Generating the same predictor
+with a 50% probability of $+1$, so that the two subsets of trial pairs
+are the same size, removes the effect entirely.
 
 ``` python
 reps_balanced, hits_balanced = replicate(
@@ -923,191 +609,36 @@ reps_balanced
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">rep</th>
-<th data-quarto-table-cell-role="th">b_f</th>
-<th data-quarto-table-cell-role="th">P (b_f)</th>
-<th data-quarto-table-cell-role="th">any impossible coef.
-significant</th>
-<th data-quarto-table-cell-role="th">n</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>-0.097</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>-0.002</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>0.005</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>-0.015</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>0.036</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>6</td>
-<td>0.077</td>
-<td>0.936</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>7</td>
-<td>0.004</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>8</td>
-<td>0.020</td>
-<td>0.221</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">8</td>
-<td>9</td>
-<td>-0.117</td>
-<td>0.130</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">9</td>
-<td>10</td>
-<td>-0.022</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">10</td>
-<td>11</td>
-<td>-0.084</td>
-<td>0.196</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">11</td>
-<td>12</td>
-<td>-0.041</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">12</td>
-<td>13</td>
-<td>-0.025</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">13</td>
-<td>14</td>
-<td>0.043</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">14</td>
-<td>15</td>
-<td>-0.063</td>
-<td>0.788</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">15</td>
-<td>16</td>
-<td>0.046</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">16</td>
-<td>17</td>
-<td>-0.020</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">17</td>
-<td>18</td>
-<td>0.002</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">18</td>
-<td>19</td>
-<td>0.005</td>
-<td>0.975</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">19</td>
-<td>20</td>
-<td>-0.014</td>
-<td>1.000</td>
-<td>no</td>
-<td>563</td>
-</tr>
-</tbody>
-</table>
+|     | rep | b_f    | P (b_f) | any impossible coef. significant | n   |
+|-----|-----|--------|---------|----------------------------------|-----|
+| 0   | 1   | -0.097 | 1.000   | no                               | 563 |
+| 1   | 2   | -0.002 | 1.000   | no                               | 563 |
+| 2   | 3   | 0.005  | 1.000   | no                               | 563 |
+| 3   | 4   | -0.015 | 1.000   | no                               | 563 |
+| 4   | 5   | 0.036  | 1.000   | no                               | 563 |
+| 5   | 6   | 0.077  | 0.936   | no                               | 563 |
+| 6   | 7   | 0.004  | 1.000   | no                               | 563 |
+| 7   | 8   | 0.020  | 0.221   | no                               | 563 |
+| 8   | 9   | -0.117 | 0.130   | no                               | 563 |
+| 9   | 10  | -0.022 | 1.000   | no                               | 563 |
+| 10  | 11  | -0.084 | 0.196   | no                               | 563 |
+| 11  | 12  | -0.041 | 1.000   | no                               | 563 |
+| 12  | 13  | -0.025 | 1.000   | no                               | 563 |
+| 13  | 14  | 0.043  | 1.000   | no                               | 563 |
+| 14  | 15  | -0.063 | 0.788   | no                               | 563 |
+| 15  | 16  | 0.046  | 1.000   | no                               | 563 |
+| 16  | 17  | -0.020 | 1.000   | no                               | 563 |
+| 17  | 18  | 0.002  | 1.000   | no                               | 563 |
+| 18  | 19  | 0.005  | 0.975   | no                               | 563 |
+| 19  | 20  | -0.014 | 1.000   | no                               | 563 |
 
 </div>
 
@@ -1162,65 +693,28 @@ pd.DataFrame({
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Term</th>
-<th data-quarto-table-cell-role="th">Mean coefficient</th>
-<th data-quarto-table-cell-role="th">Future-transition counterpart</th>
-<th data-quarto-table-cell-role="th">Mean counterpart</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>intercept</td>
-<td>2.63</td>
-<td>future transition</td>
-<td>-0.51</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward</td>
-<td>0.58</td>
-<td>reward:future transition</td>
-<td>-0.07</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition</td>
-<td>-0.32</td>
-<td>previous transition:future transition</td>
-<td>0.19</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition</td>
-<td>0.44</td>
-<td>reward:previous transition:future transition</td>
-<td>-0.05</td>
-</tr>
-</tbody>
-</table>
+|  | Term | Mean coefficient | Future-transition counterpart | Mean counterpart |
+|----|----|----|----|----|
+| 0 | intercept | 2.63 | future transition | -0.51 |
+| 1 | reward | 0.58 | reward:future transition | -0.07 |
+| 2 | previous transition | -0.32 | previous transition:future transition | 0.19 |
+| 3 | reward:previous transition | 0.44 | reward:previous transition:future transition | -0.05 |
 
 </div>
 
 ### A simulation confirms the account
 
 Data are generated from a model with no future-transition effect at all
-and an intercept fixed at values from −3 to +3; the eight-term model is
-then fitted to each simulated participant and the coefficients tested
+and an intercept fixed at values from $-3$ to $+3$; the eight-term model
+is then fitted to each simulated participant and the coefficients tested
 across the sample as before. This reproduces **Table 3** of the
 manuscript.
 
@@ -1265,83 +759,38 @@ note_fits("Intercept simulation (7 x 500 simulated participants)")
 intercept_sim
 ```
 
+<div id="tbl-intercepts">
+
+Table 3
+
+<div class="cell-output cell-output-display" data-execution_count="13">
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">True intercept</th>
-<th data-quarto-table-cell-role="th">b_f estimate</th>
-<th data-quarto-table-cell-role="th">P-value</th>
-<th data-quarto-table-cell-role="th">N</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>-3</td>
-<td>1.261</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>-2</td>
-<td>1.078</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>-1</td>
-<td>0.408</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>0</td>
-<td>-0.014</td>
-<td>0.298</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>1</td>
-<td>-0.534</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>2</td>
-<td>-1.263</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>3</td>
-<td>-1.274</td>
-<td>&lt;0.001</td>
-<td>500</td>
-</tr>
-</tbody>
-</table>
+|     | True intercept | b_f estimate | P-value | N   |
+|-----|----------------|--------------|---------|-----|
+| 0   | -3             | 1.261        | \<0.001 | 500 |
+| 1   | -2             | 1.078        | \<0.001 | 500 |
+| 2   | -1             | 0.408        | \<0.001 | 500 |
+| 3   | 0              | -0.014       | 0.298   | 500 |
+| 4   | 1              | -0.534       | \<0.001 | 500 |
+| 5   | 2              | -1.263       | \<0.001 | 500 |
+| 6   | 3              | -1.274       | \<0.001 | 500 |
+
+</div>
+
+</div>
 
 </div>
 
@@ -1389,10 +838,10 @@ formally infinite.
 
 ## Bias reduction reduces the artefact but does not remove it
 
-Firth’s penalised likelihood removes the leading *O*(*n*<sup>−1</sup>)
-term of the bias of the maximum likelihood estimator and yields finite
-estimates under separation. Refitting each participant with it
-reproduces **Table 4** of the manuscript.
+Firth’s penalised likelihood removes the leading $O(n^{-1})$ term of the
+bias of the maximum likelihood estimator and yields finite estimates
+under separation. Refitting each participant with it reproduces **Table
+4** of the manuscript.
 
 ``` python
 firth = two_step_analysis(tst, method="firth", future="real", check_sep=False)
@@ -1403,117 +852,39 @@ as_table(firth)
 
     N = 563 fitted
 
+<div id="tbl-firth">
+
+Table 4
+
+<div class="cell-output cell-output-display" data-execution_count="15">
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Effect</th>
-<th data-quarto-table-cell-role="th">Mean</th>
-<th data-quarto-table-cell-role="th">SD</th>
-<th data-quarto-table-cell-role="th">W</th>
-<th data-quarto-table-cell-role="th">P-value</th>
-<th data-quarto-table-cell-role="th">Effect size</th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>intercept</td>
-<td>1.23</td>
-<td>0.91</td>
-<td>1626</td>
-<td>&lt;0.001</td>
-<td>0.980</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward</td>
-<td>0.27</td>
-<td>0.32</td>
-<td>16798</td>
-<td>&lt;0.001</td>
-<td>0.788</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition</td>
-<td>0.09</td>
-<td>0.24</td>
-<td>47425</td>
-<td>&lt;0.001</td>
-<td>0.403</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition</td>
-<td>0.20</td>
-<td>0.33</td>
-<td>31107</td>
-<td>&lt;0.001</td>
-<td>0.608</td>
-<td></td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>future transition</td>
-<td>0.04</td>
-<td>0.23</td>
-<td>62519</td>
-<td>&lt;0.001</td>
-<td>0.212</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>reward:future transition</td>
-<td>0.01</td>
-<td>0.20</td>
-<td>75442</td>
-<td>0.308</td>
-<td>0.050</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>previous transition:future transition</td>
-<td>-0.02</td>
-<td>0.21</td>
-<td>71382</td>
-<td>0.115</td>
-<td>-0.101</td>
-<td>impossible</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>reward:previous transition:future transition</td>
-<td>0.02</td>
-<td>0.21</td>
-<td>72071</td>
-<td>0.117</td>
-<td>0.092</td>
-<td>impossible</td>
-</tr>
-</tbody>
-</table>
+|  | Effect | Mean | SD | W | P-value | Effect size |  |
+|----|----|----|----|----|----|----|----|
+| 0 | intercept | 1.23 | 0.91 | 1626 | \<0.001 | 0.980 |  |
+| 1 | reward | 0.27 | 0.32 | 16798 | \<0.001 | 0.788 |  |
+| 2 | previous transition | 0.09 | 0.24 | 47425 | \<0.001 | 0.403 |  |
+| 3 | reward:previous transition | 0.20 | 0.33 | 31107 | \<0.001 | 0.608 |  |
+| 4 | future transition | 0.04 | 0.23 | 62519 | \<0.001 | 0.212 | impossible |
+| 5 | reward:future transition | 0.01 | 0.20 | 75442 | 0.308 | 0.050 | impossible |
+| 6 | previous transition:future transition | -0.02 | 0.21 | 71382 | 0.115 | -0.101 | impossible |
+| 7 | reward:previous transition:future transition | 0.02 | 0.21 | 72071 | 0.117 | 0.092 | impossible |
+
+</div>
+
+</div>
 
 </div>
 
@@ -1532,70 +903,28 @@ pd.DataFrame({
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Effect</th>
-<th data-quarto-table-cell-role="th">MLE mean</th>
-<th data-quarto-table-cell-role="th">Firth mean</th>
-<th data-quarto-table-cell-role="th">MLE P</th>
-<th data-quarto-table-cell-role="th">Firth P</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>future transition</td>
-<td>-0.509</td>
-<td>0.044</td>
-<td>&lt;0.001</td>
-<td>&lt;0.001</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward:future transition</td>
-<td>-0.066</td>
-<td>0.008</td>
-<td>0.620</td>
-<td>0.308</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition:future transition</td>
-<td>0.187</td>
-<td>-0.020</td>
-<td>0.330</td>
-<td>0.115</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition:future transition</td>
-<td>-0.048</td>
-<td>0.021</td>
-<td>0.620</td>
-<td>0.117</td>
-</tr>
-</tbody>
-</table>
+|  | Effect | MLE mean | Firth mean | MLE P | Firth P |
+|----|----|----|----|----|----|
+| 0 | future transition | -0.509 | 0.044 | \<0.001 | \<0.001 |
+| 1 | reward:future transition | -0.066 | 0.008 | 0.620 | 0.308 |
+| 2 | previous transition:future transition | 0.187 | -0.020 | 0.330 | 0.115 |
+| 3 | reward:previous transition:future transition | -0.048 | 0.021 | 0.620 | 0.117 |
 
 </div>
 
 The coefficient on the future transition falls by roughly an order of
 magnitude. It nevertheless remains detectable across replications,
-because Firth’s method leaves a remainder of order *n*<sup>−2</sup>, and
-with 563 participants, a shared bias of that size is still
-distinguishable from zero.
+because Firth’s method leaves a remainder of order $n^{-2}$, and with
+563 participants, a shared bias of that size is still distinguishable
+from zero.
 
 ``` python
 reps_firth, hits_firth = replicate(
@@ -1615,191 +944,36 @@ reps_firth
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">rep</th>
-<th data-quarto-table-cell-role="th">b_f</th>
-<th data-quarto-table-cell-role="th">P (b_f)</th>
-<th data-quarto-table-cell-role="th">any impossible coef.
-significant</th>
-<th data-quarto-table-cell-role="th">n</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>0.037</td>
-<td>0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>0.018</td>
-<td>0.268</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>0.036</td>
-<td>0.001</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>0.019</td>
-<td>0.166</td>
-<td>no</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>0.039</td>
-<td>0.001</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>6</td>
-<td>0.036</td>
-<td>0.003</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>7</td>
-<td>0.044</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>8</td>
-<td>0.031</td>
-<td>0.045</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">8</td>
-<td>9</td>
-<td>0.030</td>
-<td>0.029</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">9</td>
-<td>10</td>
-<td>0.037</td>
-<td>0.003</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">10</td>
-<td>11</td>
-<td>0.021</td>
-<td>0.150</td>
-<td>no</td>
-<td>561</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">11</td>
-<td>12</td>
-<td>0.042</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">12</td>
-<td>13</td>
-<td>0.023</td>
-<td>0.035</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">13</td>
-<td>14</td>
-<td>0.040</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">14</td>
-<td>15</td>
-<td>0.040</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">15</td>
-<td>16</td>
-<td>0.047</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">16</td>
-<td>17</td>
-<td>0.031</td>
-<td>0.011</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">17</td>
-<td>18</td>
-<td>0.037</td>
-<td>0.001</td>
-<td>yes</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">18</td>
-<td>19</td>
-<td>0.045</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">19</td>
-<td>20</td>
-<td>0.028</td>
-<td>0.021</td>
-<td>yes</td>
-<td>563</td>
-</tr>
-</tbody>
-</table>
+|     | rep | b_f   | P (b_f) | any impossible coef. significant | n   |
+|-----|-----|-------|---------|----------------------------------|-----|
+| 0   | 1   | 0.037 | 0.001   | yes                              | 563 |
+| 1   | 2   | 0.018 | 0.268   | yes                              | 563 |
+| 2   | 3   | 0.036 | 0.001   | yes                              | 562 |
+| 3   | 4   | 0.019 | 0.166   | no                               | 563 |
+| 4   | 5   | 0.039 | 0.001   | yes                              | 562 |
+| 5   | 6   | 0.036 | 0.003   | yes                              | 563 |
+| 6   | 7   | 0.044 | \<0.001 | yes                              | 563 |
+| 7   | 8   | 0.031 | 0.045   | yes                              | 563 |
+| 8   | 9   | 0.030 | 0.029   | yes                              | 563 |
+| 9   | 10  | 0.037 | 0.003   | yes                              | 562 |
+| 10  | 11  | 0.021 | 0.150   | no                               | 561 |
+| 11  | 12  | 0.042 | \<0.001 | yes                              | 563 |
+| 12  | 13  | 0.023 | 0.035   | yes                              | 563 |
+| 13  | 14  | 0.040 | \<0.001 | yes                              | 563 |
+| 14  | 15  | 0.040 | \<0.001 | yes                              | 563 |
+| 15  | 16  | 0.047 | \<0.001 | yes                              | 563 |
+| 16  | 17  | 0.031 | 0.011   | yes                              | 563 |
+| 17  | 18  | 0.037 | 0.001   | yes                              | 562 |
+| 18  | 19  | 0.045 | \<0.001 | yes                              | 563 |
+| 19  | 20  | 0.028 | 0.021   | yes                              | 563 |
 
 </div>
 
@@ -1821,191 +995,36 @@ reps_firth_dropped
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">rep</th>
-<th data-quarto-table-cell-role="th">b_f</th>
-<th data-quarto-table-cell-role="th">P (b_f)</th>
-<th data-quarto-table-cell-role="th">any impossible coef.
-significant</th>
-<th data-quarto-table-cell-role="th">n</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>0.041</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>331</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>0.051</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>323</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>0.032</td>
-<td>0.010</td>
-<td>yes</td>
-<td>338</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>0.033</td>
-<td>0.014</td>
-<td>yes</td>
-<td>340</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>0.055</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>317</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>6</td>
-<td>0.056</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>312</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>7</td>
-<td>0.039</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>339</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>8</td>
-<td>0.037</td>
-<td>0.003</td>
-<td>yes</td>
-<td>346</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">8</td>
-<td>9</td>
-<td>0.031</td>
-<td>0.016</td>
-<td>yes</td>
-<td>333</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">9</td>
-<td>10</td>
-<td>0.026</td>
-<td>0.026</td>
-<td>yes</td>
-<td>323</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">10</td>
-<td>11</td>
-<td>0.054</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>339</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">11</td>
-<td>12</td>
-<td>0.057</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>328</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">12</td>
-<td>13</td>
-<td>0.049</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>335</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">13</td>
-<td>14</td>
-<td>0.038</td>
-<td>0.004</td>
-<td>yes</td>
-<td>325</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">14</td>
-<td>15</td>
-<td>0.030</td>
-<td>0.005</td>
-<td>yes</td>
-<td>333</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">15</td>
-<td>16</td>
-<td>0.051</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>322</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">16</td>
-<td>17</td>
-<td>0.039</td>
-<td>0.002</td>
-<td>yes</td>
-<td>316</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">17</td>
-<td>18</td>
-<td>0.040</td>
-<td>0.003</td>
-<td>yes</td>
-<td>332</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">18</td>
-<td>19</td>
-<td>0.044</td>
-<td>&lt;0.001</td>
-<td>yes</td>
-<td>333</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">19</td>
-<td>20</td>
-<td>0.029</td>
-<td>0.021</td>
-<td>yes</td>
-<td>325</td>
-</tr>
-</tbody>
-</table>
+|     | rep | b_f   | P (b_f) | any impossible coef. significant | n   |
+|-----|-----|-------|---------|----------------------------------|-----|
+| 0   | 1   | 0.041 | \<0.001 | yes                              | 331 |
+| 1   | 2   | 0.051 | \<0.001 | yes                              | 323 |
+| 2   | 3   | 0.032 | 0.010   | yes                              | 338 |
+| 3   | 4   | 0.033 | 0.014   | yes                              | 340 |
+| 4   | 5   | 0.055 | \<0.001 | yes                              | 317 |
+| 5   | 6   | 0.056 | \<0.001 | yes                              | 312 |
+| 6   | 7   | 0.039 | \<0.001 | yes                              | 339 |
+| 7   | 8   | 0.037 | 0.003   | yes                              | 346 |
+| 8   | 9   | 0.031 | 0.016   | yes                              | 333 |
+| 9   | 10  | 0.026 | 0.026   | yes                              | 323 |
+| 10  | 11  | 0.054 | \<0.001 | yes                              | 339 |
+| 11  | 12  | 0.057 | \<0.001 | yes                              | 328 |
+| 12  | 13  | 0.049 | \<0.001 | yes                              | 335 |
+| 13  | 14  | 0.038 | 0.004   | yes                              | 325 |
+| 14  | 15  | 0.030 | 0.005   | yes                              | 333 |
+| 15  | 16  | 0.051 | \<0.001 | yes                              | 322 |
+| 16  | 17  | 0.039 | 0.002   | yes                              | 316 |
+| 17  | 18  | 0.040 | 0.003   | yes                              | 332 |
+| 18  | 19  | 0.044 | \<0.001 | yes                              | 333 |
+| 19  | 20  | 0.029 | 0.021   | yes                              | 325 |
 
 </div>
 
@@ -2119,95 +1138,24 @@ pd.DataFrame({
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Effect</th>
-<th data-quarto-table-cell-role="th">Pooled estimate</th>
-<th data-quarto-table-cell-role="th">Pooled P</th>
-<th data-quarto-table-cell-role="th">Mean of participant-level
-estimates</th>
-<th data-quarto-table-cell-role="th">Two-step P</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>intercept</td>
-<td>1.049</td>
-<td>&lt;0.001</td>
-<td>2.63</td>
-<td>&lt;0.001</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>reward</td>
-<td>0.203</td>
-<td>&lt;0.001</td>
-<td>0.58</td>
-<td>&lt;0.001</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>previous transition</td>
-<td>0.041</td>
-<td>&lt;0.001</td>
-<td>-0.32</td>
-<td>0.102</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>reward:previous transition</td>
-<td>0.159</td>
-<td>&lt;0.001</td>
-<td>0.44</td>
-<td>&lt;0.001</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>future transition</td>
-<td>0.002</td>
-<td>0.843</td>
-<td>-0.51</td>
-<td>&lt;0.001</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>reward:future transition</td>
-<td>0.000</td>
-<td>0.972</td>
-<td>-0.07</td>
-<td>0.620</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>previous transition:future transition</td>
-<td>-0.012</td>
-<td>0.130</td>
-<td>0.19</td>
-<td>0.330</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>reward:previous transition:future transition</td>
-<td>0.007</td>
-<td>0.382</td>
-<td>-0.05</td>
-<td>0.620</td>
-</tr>
-</tbody>
-</table>
+|  | Effect | Pooled estimate | Pooled P | Mean of participant-level estimates | Two-step P |
+|----|----|----|----|----|----|
+| 0 | intercept | 1.049 | \<0.001 | 2.63 | \<0.001 |
+| 1 | reward | 0.203 | \<0.001 | 0.58 | \<0.001 |
+| 2 | previous transition | 0.041 | \<0.001 | -0.32 | 0.102 |
+| 3 | reward:previous transition | 0.159 | \<0.001 | 0.44 | \<0.001 |
+| 4 | future transition | 0.002 | 0.843 | -0.51 | \<0.001 |
+| 5 | reward:future transition | 0.000 | 0.972 | -0.07 | 0.620 |
+| 6 | previous transition:future transition | -0.012 | 0.130 | 0.19 | 0.330 |
+| 7 | reward:previous transition:future transition | 0.007 | 0.382 | -0.05 | 0.620 |
 
 </div>
 
@@ -2225,77 +1173,26 @@ variation in the outcome and are skipped before any model is fitted.
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
-    .dataframe tbody tr th {
+&#10;    .dataframe tbody tr th {
         vertical-align: top;
     }
-
-    .dataframe thead th {
+&#10;    .dataframe thead th {
         text-align: right;
     }
 </style>
 
-<table class="dataframe" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Analysis</th>
-<th data-quarto-table-cell-role="th">Model fits</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-quarto-table-cell-role="th">0</td>
-<td>Real future transition, MLE</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">1</td>
-<td>Simulated future transition (70/30), MLE</td>
-<td>562</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">2</td>
-<td>Simulated predictor, MLE, 20 replications</td>
-<td>11256</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">3</td>
-<td>Balanced predictor, MLE, 20 replications</td>
-<td>11260</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">4</td>
-<td>Intercept simulation (7 x 500 simulated partic...</td>
-<td>3500</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">5</td>
-<td>Real future transition, Firth</td>
-<td>563</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">6</td>
-<td>Simulated predictor, Firth, 20 replications</td>
-<td>11254</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">7</td>
-<td>Simulated predictor, Firth, separated excluded...</td>
-<td>6590</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">8</td>
-<td>Pooled fit across all participants</td>
-<td>1</td>
-</tr>
-<tr>
-<td data-quarto-table-cell-role="th">9</td>
-<td>Total</td>
-<td>45549</td>
-</tr>
-</tbody>
-</table>
+|     | Analysis                                          | Model fits |
+|-----|---------------------------------------------------|------------|
+| 0   | Real future transition, MLE                       | 563        |
+| 1   | Simulated future transition (70/30), MLE          | 562        |
+| 2   | Simulated predictor, MLE, 20 replications         | 11256      |
+| 3   | Balanced predictor, MLE, 20 replications          | 11260      |
+| 4   | Intercept simulation (7 x 500 simulated partic... | 3500       |
+| 5   | Real future transition, Firth                     | 563        |
+| 6   | Simulated predictor, Firth, 20 replications       | 11254      |
+| 7   | Simulated predictor, Firth, separated excluded... | 6590       |
+| 8   | Pooled fit across all participants                | 1          |
+| 9   | Total                                             | 45549      |
 
 </div>
 
